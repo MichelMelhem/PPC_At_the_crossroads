@@ -36,6 +36,9 @@ def display_client():
                 # Display queue sizes
                 stdscr.addstr(4, 0, f"Normal Vehicles in Queue: {traffic_data['normal_queue_size']}")
                 stdscr.addstr(5, 0, f"Priority Vehicles in Queue: {traffic_data['priority_queue_size']}")
+                
+                stdscr.addstr(6, 0, "")  # Empty line
+                stdscr.addstr(7, 0, "")  # Empty line
 
                 # Draw a simple representation of the intersection
                 draw_intersection(stdscr, traffic_data["lights"])
@@ -52,35 +55,34 @@ def display_client():
             curses.echo()
             curses.endwin()
 
-
 def draw_intersection(stdscr, lights_status):
     """
-    Draws a simple representation of the intersection.
+    Draws a simple representation of the intersection, 3 lines lower.
     """
     intersection_center = 10
+    vertical_offset = 3  # Offset to move the graphic 3 lines lower
 
     # Horizontal road
     for i in range(5, 16):
-        stdscr.addstr(intersection_center, i, "-")
+        stdscr.addstr(intersection_center + vertical_offset, i, "-")
 
     # Vertical road
     for i in range(5, 16):
-        stdscr.addstr(i, intersection_center, "|")
+        stdscr.addstr(i + vertical_offset, intersection_center, "|")
 
     # Traffic light indicators
     if lights_status == "North-South":
-        stdscr.addstr(5, intersection_center - 2, "G")  # Green for North
-        stdscr.addstr(15, intersection_center - 2, "G")  # Green for South
-        stdscr.addstr(intersection_center - 1, 5, "R")  # Red for West
-        stdscr.addstr(intersection_center - 1, 15, "R")  # Red for East
+        stdscr.addstr(5 + vertical_offset, intersection_center - 2, "G")  # Green for North
+        stdscr.addstr(15 + vertical_offset, intersection_center - 2, "G")  # Green for South
+        stdscr.addstr(intersection_center - 1 + vertical_offset, 5, "R")  # Red for West
+        stdscr.addstr(intersection_center - 1 + vertical_offset, 15, "R")  # Red for East
     elif lights_status == "East-West":
-        stdscr.addstr(5, intersection_center - 2, "R")  # Red for North
-        stdscr.addstr(15, intersection_center - 2, "R")  # Red for South
-        stdscr.addstr(intersection_center - 1, 5, "G")  # Green for West
-        stdscr.addstr(intersection_center - 1, 15, "G")  # Green for East
+        stdscr.addstr(5 + vertical_offset, intersection_center - 2, "R")  # Red for North
+        stdscr.addstr(15 + vertical_offset, intersection_center - 2, "R")  # Red for South
+        stdscr.addstr(intersection_center - 1 + vertical_offset, 5, "G")  # Green for West
+        stdscr.addstr(intersection_center - 1 + vertical_offset, 15, "G")  # Green for East
     elif lights_status == "priority":
-        stdscr.addstr(intersection_center, intersection_center, "P")  # Priority vehicle in the center
-
+        stdscr.addstr(intersection_center + vertical_offset, intersection_center, "P")  # Priority vehicle in the center
 
 if __name__ == "__main__":
     display_client()
