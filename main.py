@@ -10,7 +10,7 @@ from priority_traffic_gen import priority_traffic_gen
 
 
 
-
+"""
 def display_server(shared_state, normal_queue, priority_queue):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind(("127.0.0.1", 65432))
@@ -45,23 +45,30 @@ def display_server(shared_state, normal_queue, priority_queue):
             if 'conn' in locals():
                 conn.close()
                 print("Connection closed. Waiting for a new connection...")
+"""
+
 
 if __name__ == "__main__":
     import multiprocessing
     multiprocessing.set_start_method("fork")  # Use fork on macOS
+    pipe_path = "./tmp/priority_pipe"
 
     manager = Manager()
-    normal_queue = manager.Queue()
-    priority_queue = manager.Queue()
+    
+    west_queue = manager.Queue()
+    east_queue = manager.Queue()    
+    north_queue = manager.Queue()
+    south_queue = manager.Queue()
+    
     shared_state = manager.dict({"lights": "North-South"})
     signal_event = manager.Event()  # Shared signal event
 
     processes = [
-        Process(target=normal_traffic_gen, args=(normal_queue,)),
-        Process(target=priority_traffic_gen, args=(priority_queue, signal_event)),
-        Process(target=lights, args=(shared_state, signal_event)),
-        Process(target=coordinator, args=(normal_queue, priority_queue)),
-        Process(target=display_server, args=(shared_state, normal_queue, priority_queue)),
+        Process(target=priority_traffic_gen, args=(north_queue,west_queue,east_queue,south_queue,signal_event, pipe_path)),
+        Process(target=normal_traffic_gen, args=(north_queue,west_queue,east_queue,south_queue)),
+        Process(target=lights, args=(shared_state, signal_event, pipe_path)),
+        Process(target=coordinator, args=(north_queue,west_queue,east_queue,south_queue, shared_state, signal_event)),
+        #Process(target=display_server, args=(shared_state, normal_queue, priority_queue)),
     ]
 
     for p in processes:
