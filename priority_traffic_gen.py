@@ -7,12 +7,18 @@ import os
 
 def priority_traffic_gen(north_queue, south_queue, east_queue, west_queue, signal_event, pipe_path ):
 
-    # Ensure the named pipe exists
+
+    # Now create the named pipe (FIFO)
     if not os.path.exists(pipe_path):
         os.mkfifo(pipe_path)
+        print("Named pipe created at:", pipe_path)
+    else:
+         print("Named pipe already exists.")
+
+        
 
     while True:
-        time.sleep(random.uniform(4,5))  # Random delay before next priority vehicle
+        time.sleep(random.uniform(4,6))  # Random delay before next priority vehicle
         vehicle = {
             "type": "priority",
             "id": random.randint(1000, 9999),
@@ -45,5 +51,10 @@ def priority_traffic_gen(north_queue, south_queue, east_queue, west_queue, signa
 
             # Trigger the signal event to notify lights
             signal_event.set()
+            print(f"🚦 Priority mode: ONLY ", vehicle["source"] ," is GREEN!")
+            # Un seul véhicule prioritaire ne peut ètre traité à la fois
+            while signal_event.is_set():
+                ()
+
 
 
