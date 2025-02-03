@@ -1,10 +1,7 @@
 from multiprocessing import Process, Manager
-import time
-import socket
-import pickle
+
 
 from coordinator import coordinator
-import display
 from lights import lights
 from normal_traffic_gen import normal_traffic_gen
 from priority_traffic_gen import priority_traffic_gen

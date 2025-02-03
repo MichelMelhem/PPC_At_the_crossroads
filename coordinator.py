@@ -34,8 +34,7 @@ def coordinator(north_queue: Queue, south_queue: Queue, east_queue: Queue, west_
         }
 
         # Exceptional case for priority vehicles
-        processed = False  # Track if we processed a car
-        if light_state == "North" and n:
+        if light_state == "North":
             vehicle = north_queue.get()
             if vehicle["type"] == "priority":
                 print(f"🚑 Priority vehicle n° {vehicle['id']} from North passed")
@@ -44,9 +43,7 @@ def coordinator(north_queue: Queue, south_queue: Queue, east_queue: Queue, west_
                 event.clear()
             else:
                 print(f"North goes: {vehicle['id']}")
-            processed = True
-
-        elif light_state == "South" and s:
+        elif light_state == "South":
             vehicle = south_queue.get()
             if vehicle["type"] == "priority":
                 print(f"🚑 Priority vehicle n° {vehicle['id']} from South passed")
@@ -55,9 +52,8 @@ def coordinator(north_queue: Queue, south_queue: Queue, east_queue: Queue, west_
                 event.clear()
             else:
                 print(f"South goes: {vehicle['id']}")
-            processed = True
 
-        elif light_state == "East" and e:
+        elif light_state == "East":
             vehicle = east_queue.get()
             if vehicle["type"] == "priority":
                 print(f"🚑 Priority vehicle n° {vehicle['id']} from East passed")
@@ -66,9 +62,7 @@ def coordinator(north_queue: Queue, south_queue: Queue, east_queue: Queue, west_
                 event.clear()
             else:
                 print(f"East goes: {vehicle['id']}")
-            processed = True
-
-        elif light_state == "West" and w:
+        elif light_state == "West":
             vehicle = west_queue.get()
             if vehicle["type"] == "priority":
                 print(f"🚑 Priority vehicle n° {vehicle['id']} from West passed")
@@ -77,29 +71,33 @@ def coordinator(north_queue: Queue, south_queue: Queue, east_queue: Queue, west_
                 event.clear()
             else:
                 print(f"West goes: {vehicle['id']}")
-            processed = True
+        # Normal traffic flow
+        if vehicle["type"] == "normal":
+            if light_state == "North-South":
+                # North must yield to East, but since East has a red light, North can go
+                if n and (not e or light_state == "North-South"): 
+                    vehicule = north_queue.get()
+                    print("North goes :" , vehicule["id"])
+
+                # South must yield to West, but since West has a red light, South can go
+                elif s and (not w or light_state == "North-South"):
+                    vehicule = south_queue.get()
+                    print("South goes :" , vehicule["id"])
+
+            elif light_state == "East-West":
+                # East must yield to South, but since South has a red light, East can go
+                if e and (not s or light_state == "East-West"):
+                    vehicule = east_queue.get()
+                    print("East goes :" , vehicule["id"])
+
+                # West must yield to North, but since North has a red light, West can go
+                elif w and (not n or light_state == "East-West"):
+                    vehicule = west_queue.get()
+                    print("West goes :" , vehicule["id"])
+
             
 
-        # Normal operation (right-hand rule priority)
-        elif not processed:
-            if light_state == "North-South":
-                if n:
-                    vehicle = north_queue.get()
-                    print(f"North goes: {vehicle['id']}")
-                    processed = True
-                elif s:
-                    vehicle = south_queue.get()
-                    print(f"South goes: {vehicle['id']}")
-                    processed = True
-            elif light_state == "East-West":
-                if e:
-                    vehicle = east_queue.get()
-                    print(f"East goes: {vehicle['id']}")
-                    processed = True
-                elif w:
-                    vehicle = west_queue.get()
-                    print(f"West goes: {vehicle['id']}")
-                    processed = True
+
 
         # Send data update to display
         try:
@@ -109,4 +107,4 @@ def coordinator(north_queue: Queue, south_queue: Queue, east_queue: Queue, west_
             conn = None  # Reset connection to accept a new client
 
         # Simulate time for cars to cross
-        time.sleep(1)
+        time.sleep(0.3)

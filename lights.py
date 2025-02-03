@@ -1,5 +1,4 @@
 import time
-import os
 
 def lights(shared_state, signal_event,pipe_path):
 
@@ -14,7 +13,6 @@ def lights(shared_state, signal_event,pipe_path):
                     # Set only the priority vehicle's direction to green, others to red
                     shared_state["lights"] = priority_direction
 
-                  
 
             except Exception as e:
                 print(f"Error reading pipe: {e}")
