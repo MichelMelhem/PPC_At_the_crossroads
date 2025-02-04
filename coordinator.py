@@ -1,9 +1,9 @@
-from multiprocessing import Event, Queue
+from multiprocessing import Queue
 import pickle
 import socket
 import time
 
-def coordinator(north_queue: Queue, south_queue: Queue, east_queue: Queue, west_queue: Queue, shared_state, event: Event):
+def coordinator(north_queue: Queue, south_queue: Queue, east_queue: Queue, west_queue: Queue, shared_state, event):
     # Set up a TCP server for communication with the display client
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind(("127.0.0.1", 65432))  # Bind to the address and port
