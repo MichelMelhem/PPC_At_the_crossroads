@@ -24,10 +24,10 @@ if __name__ == "__main__":
     signal_event = manager.Event()  # Shared signal event
 
     processes = [
-        Process(target=priority_traffic_gen, args=(north_queue,west_queue,east_queue,south_queue,signal_event, pipe_path)),
+       Process(target=priority_traffic_gen, args=(north_queue,west_queue,east_queue,south_queue,signal_event, pipe_path)),
+        Process(target=coordinator, args=(north_queue,west_queue,east_queue,south_queue, shared_state, signal_event)),
         Process(target=normal_traffic_gen, args=(north_queue,west_queue,east_queue,south_queue)),
         Process(target=lights, args=(shared_state, signal_event, pipe_path)),
-        Process(target=coordinator, args=(north_queue,west_queue,east_queue,south_queue, shared_state, signal_event)),
     ]
 
     for p in processes:

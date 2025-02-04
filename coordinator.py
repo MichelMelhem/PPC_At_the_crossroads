@@ -32,70 +32,68 @@ def coordinator(north_queue: Queue, south_queue: Queue, east_queue: Queue, west_
             "lights": light_state,
             "priority": False,  # Default: no priority vehicle
         }
+        match light_state:
+            case "North":
+                vehicle = north_queue.get()
+                if vehicle["type"] == "priority":
+                    print(f"🚑 Priority vehicle n° {vehicle['id']} from North passed")
+                    data["priority"] = True
+                    shared_state["lights"] = "North-South"  # Resume normal flow
+                    event.clear()
+                else:
+                    print(f"North goes: {vehicle['id']}")
 
-        # Exceptional case for priority vehicles
-        if light_state == "North":
-            vehicle = north_queue.get()
-            if vehicle["type"] == "priority":
-                print(f"🚑 Priority vehicle n° {vehicle['id']} from North passed")
-                data["priority"] = True
-                shared_state["lights"] = "North-South"  # Resume normal flow
-                event.clear()
-            else:
-                print(f"North goes: {vehicle['id']}")
-        elif light_state == "South":
-            vehicle = south_queue.get()
-            if vehicle["type"] == "priority":
-                print(f"🚑 Priority vehicle n° {vehicle['id']} from South passed")
-                data["priority"] = True
-                shared_state["lights"] = "North-South"  # Resume normal flow
-                event.clear()
-            else:
-                print(f"South goes: {vehicle['id']}")
+            case "South":
+                vehicle = south_queue.get()
+                if vehicle["type"] == "priority":
+                    print(f"🚑 Priority vehicle n° {vehicle['id']} from South passed")
+                    data["priority"] = True
+                    shared_state["lights"] = "North-South"  # Resume normal flow
+                    event.clear()
+                else:
+                    print(f"South goes: {vehicle['id']}")
 
-        elif light_state == "East":
-            vehicle = east_queue.get()
-            if vehicle["type"] == "priority":
-                print(f"🚑 Priority vehicle n° {vehicle['id']} from East passed")
-                data["priority"] = True
-                shared_state["lights"] = "North-South"  # Resume normal flow
-                event.clear()
-            else:
-                print(f"East goes: {vehicle['id']}")
-        elif light_state == "West":
-            vehicle = west_queue.get()
-            if vehicle["type"] == "priority":
-                print(f"🚑 Priority vehicle n° {vehicle['id']} from West passed")
-                data["priority"] = True
-                shared_state["lights"] = "North-South"  # Resume normal flow
-                event.clear()
-            else:
-                print(f"West goes: {vehicle['id']}")
-        # Normal traffic flow
-        if vehicle["type"] == "normal":
-            if light_state == "North-South":
+            case "East":
+                vehicle = east_queue.get()
+                if vehicle["type"] == "priority":
+                    print(f"🚑 Priority vehicle n° {vehicle['id']} from East passed")
+                    data["priority"] = True
+                    shared_state["lights"] = "North-South"  # Resume normal flow
+                    event.clear()
+                else:
+                    print(f"East goes: {vehicle['id']}")
+
+            case "West":
+                vehicle = west_queue.get()
+                if vehicle["type"] == "priority":
+                    print(f"🚑 Priority vehicle n° {vehicle['id']} from West passed")
+                    data["priority"] = True
+                    shared_state["lights"] = "North-South"  # Resume normal flow
+                    event.clear()
+                else:
+                    print(f"West goes: {vehicle['id']}")
+
+            case "North-South":
                 # North must yield to East, but since East has a red light, North can go
                 if n and (not e or light_state == "North-South"): 
-                    vehicule = north_queue.get()
-                    print("North goes :" , vehicule["id"])
+                    vehicle = north_queue.get()
+                    print("North goes:", vehicle["id"])
 
                 # South must yield to West, but since West has a red light, South can go
                 elif s and (not w or light_state == "North-South"):
-                    vehicule = south_queue.get()
-                    print("South goes :" , vehicule["id"])
+                    vehicle = south_queue.get()
+                    print("South goes:", vehicle["id"])
 
-            elif light_state == "East-West":
+            case "East-West":
                 # East must yield to South, but since South has a red light, East can go
                 if e and (not s or light_state == "East-West"):
-                    vehicule = east_queue.get()
-                    print("East goes :" , vehicule["id"])
+                    vehicle = east_queue.get()
+                    print("East goes:", vehicle["id"])
 
                 # West must yield to North, but since North has a red light, West can go
                 elif w and (not n or light_state == "East-West"):
-                    vehicule = west_queue.get()
-                    print("West goes :" , vehicule["id"])
-
-            
+                    vehicle = west_queue.get()
+                    print("West goes:", vehicle["id"])
 
 
 

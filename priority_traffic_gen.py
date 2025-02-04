@@ -25,6 +25,9 @@ def priority_traffic_gen(north_queue, south_queue, east_queue, west_queue, signa
             "destination": random.choice(["North", "South", "East", "West"])
         }
 
+        # Trigger the signal event to notify lights
+        signal_event.set()
+        
         if vehicle["source"] != vehicle["destination"]:
             match vehicle["source"]:
                 case "North":
@@ -48,8 +51,6 @@ def priority_traffic_gen(north_queue, south_queue, east_queue, west_queue, signa
 
 
 
-            # Trigger the signal event to notify lights
-            signal_event.set()
             print(f"🚦 Priority mode: ONLY ", vehicle["source"] ," is GREEN!")
             # Un seul véhicule prioritaire ne peut ètre traité à la fois
             while signal_event.is_set():
