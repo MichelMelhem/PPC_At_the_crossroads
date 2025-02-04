@@ -4,6 +4,7 @@ def lights(shared_state, signal_event,pipe_path):
 
 
     while True:
+       
         if signal_event.is_set():  #les feu nous informent qu'un vehicule prioritaire va passer
             try:
                 with open(pipe_path, "r") as pipe:
@@ -11,6 +12,8 @@ def lights(shared_state, signal_event,pipe_path):
 
                 if priority_direction:
                     # Set only the priority vehicle's direction to green, others to red
+                    if(shared_state["lights"] == "North-South" or shared_state["lights"] == "East-West"):
+                        shared_state["lightsbeforepriority"] = shared_state["lights"]
                     shared_state["lights"] = priority_direction
 
 
@@ -24,4 +27,4 @@ def lights(shared_state, signal_event,pipe_path):
                 shared_state["lights"] = "North-South"
 
             print(f"🚦 Normal Traffic light state: {shared_state['lights']}")
-            time.sleep(10)  # Normal light cycle
+            time.sleep(5)  # Normal light cycle

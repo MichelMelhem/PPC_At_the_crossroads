@@ -20,7 +20,7 @@ if __name__ == "__main__":
     north_queue = manager.Queue()
     south_queue = manager.Queue()
     
-    shared_state = manager.dict({"lights": "North-South"})
+    shared_state = manager.dict({"lights": "North-South", "lightsbeforepriority": "North-South"})
     signal_event = manager.Event()  # Shared signal event
 
     processes = [

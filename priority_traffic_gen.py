@@ -17,7 +17,7 @@ def priority_traffic_gen(north_queue, south_queue, east_queue, west_queue, signa
         
 
     while True:
-        time.sleep(random.uniform(4,6))  # Random delay before next priority vehicle
+        time.sleep(random.uniform(9,12))  # Random delay before next priority vehicle
         vehicle = {
             "type": "priority",
             "id": random.randint(1000, 9999),
@@ -25,7 +25,15 @@ def priority_traffic_gen(north_queue, south_queue, east_queue, west_queue, signa
             "destination": random.choice(["North", "South", "East", "West"])
         }
 
-        # Trigger the signal event to notify lights
+         # Notify lights process by writing the source direction
+        try:
+                with open(pipe_path, "w") as pipe:
+                    pipe.write(vehicle["source"] + "\n")
+                    pipe.flush()
+        except Exception as e:
+                print(f"Error writing to pipe: {e}")
+
+            # Trigger the signal event to notify lights
         signal_event.set()
         
         if vehicle["source"] != vehicle["destination"]:
@@ -41,16 +49,7 @@ def priority_traffic_gen(north_queue, south_queue, east_queue, west_queue, signa
             
             print(f"🚨 Priority vehicle generated from {vehicle['source']} to {vehicle['destination']} with id {vehicle['id']}!")
 
-            # Notify lights process by writing the source direction
-            try:
-                with open(pipe_path, "w") as pipe:
-                    pipe.write(vehicle["source"] + "\n")
-                    pipe.flush()
-            except Exception as e:
-                print(f"Error writing to pipe: {e}")
-
-
-
+       
             print(f"🚦 Priority mode: ONLY ", vehicle["source"] ," is GREEN!")
             # Un seul véhicule prioritaire ne peut ètre traité à la fois
             while signal_event.is_set():
